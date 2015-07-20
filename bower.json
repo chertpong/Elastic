@@ -1,0 +1,26 @@
+{
+  "name": "Elastic",
+  "version": "0.0.0",
+  "authors": [
+    "Chertpong <chertpong_h@cmu.ac.th>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/main/resources/static/bower_components",
+    "test",
+    "tests",
+    "src/test"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "~1.4.3",
+    "angular-route": "~1.4.3",
+    "angular-loader": "~1.4.3",
+    "angular-resource": "~1.4.3",
+    "components-font-awesome": "~4.3.0"
+  }
+}
