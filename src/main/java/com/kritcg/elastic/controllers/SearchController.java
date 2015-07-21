@@ -3,10 +3,8 @@ package com.kritcg.elastic.controllers;
 import com.kritcg.elastic.entities.Blog;
 import com.kritcg.elastic.services.SearchBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,9 +19,7 @@ public class SearchController {
     private SearchBlogService searchBlogService;
 
     @RequestMapping(value = "",method = RequestMethod.GET)
-    public List<Blog> getBlogs(){
-        return searchBlogService.getBlogs();
-    }
+    public List<Blog> getBlogs(){ return searchBlogService.getBlogs(); }
 
     @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
     public Blog getBlog(@PathVariable String id){
@@ -31,13 +27,15 @@ public class SearchController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Blog addBlog(Blog blog){
+    public Blog addBlog(@RequestBody Blog blog, BindingResult bindingResult){
         return searchBlogService.addBlog(blog);
     }
 
-    @RequestMapping(value = "/delete/{id}")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public Blog deleteBlog(@PathVariable String id){
         return searchBlogService.deleteBlog(id);
     }
 
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public Blog updateBlog(@RequestBody Blog blog, BindingResult bindingResult){ return searchBlogService.updateBlog(blog); }
 }
