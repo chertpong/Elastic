@@ -1,11 +1,19 @@
 package com.kritcg.elastic.dao;
 
 import com.kritcg.elastic.entities.Blog;
+import com.kritcg.elastic.entities.Tag;
 import com.kritcg.elastic.repositories.BlogRepository;
 import org.elasticsearch.common.collect.Lists;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +23,8 @@ import java.util.List;
 public class BlogDaoImpl implements BlogDao {
     @Autowired
     BlogRepository blogRepository;
-
+    @Autowired
+    ElasticsearchTemplate elasticsearchTemplate;
     @Override
     public List<Blog> getBlogs() {
         if(blogRepository == null){
@@ -26,7 +35,7 @@ public class BlogDaoImpl implements BlogDao {
 
     @Override
     public List<Blog> getBlogs(String keyword) {
-        return Lists.newArrayList(blogRepository.findByContentContaining(keyword));
+        return Lists.newArrayList(blogRepository.findByContentLike(keyword));
     }
 
     @Override
@@ -60,5 +69,31 @@ public class BlogDaoImpl implements BlogDao {
         else{
             return null;
          }
+    }
+
+    @Override
+    public List<Blog> getByTags(List<Tag> tagList) {
+//        SearchQuery query = new NativeSearchQueryBuilder()
+//                .withQuery(
+//                        QueryBuilders.filteredQuery(
+//                                QueryBuilders.matchAllQuery(),
+//                                FilterBuilders.termsFilter("id", "1")
+//                        )
+//                )
+//                .build();
+//        List<Blog> list = new ArrayList<Blog>();
+//        blogRepository.search(query).forEach(b->list.add(b));
+        return null;
+    }
+
+    @Override
+    public List<Blog> getByTitleAndContentLike(String keyword) {
+        SearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(
+                        QueryBuilders.multiMatchQuery(keyword, "title", "content")
+                                .type(MultiMatchQueryBuilder.Type.BEST_FIELDS)
+                )
+                .build();
+        return elasticsearchTemplate.queryForList(query,Blog.class);
     }
 }

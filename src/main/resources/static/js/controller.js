@@ -11,34 +11,58 @@ elasticMainController.controller('indexController',['$scope','$http','$location'
         $scope.searchPage = true;
 
         //Response vars
-        $scope.max_score = 0;
+        //$scope.max_score = 0;
         $scope.blogs = [];
         //Request vars
-        $scope.query = "";
+        $scope.query = '';
 
         $scope.search = function () {
-            if ($scope.query != "") {
-                $http.get('http://localhost:9200/jobs/it/_search', {params: {q: $scope.query}}).success(
+            console.log('search()');
+            $scope.blogs = [];
+            if ($scope.query == '') {
+                $scope.blogs = [];
+                $http.get('/search/all').success(
                     function (data) {
-                        if (data.hits.hits.length != 0) {
+                        console.log('/search/all')
+                        if (data.length != 0) {
                             $scope.result = true;
-                            $scope.max_score = data.hits.max_score;
-                            $scope.jobs = data.hits.hits;
-                            Console.log($scope.max_score);
+                            //$scope.max_score = data.hits.max_score;
+                            data.forEach(function(e,i,a){
+                                var d =new Date(data.createDate*1000);
+                                console.log(d.format("dd.mm.yyyy hh:MM:ss"));
+                                data.createDate = d.getFullYear()+'/'+ d.getMonth()+'/'+ d.getDay();
+                            });
+                            $scope.blogs = data;
                         }
                         else {
                             $scope.result = false;
+                            setTimeout(function(){
+                                $(".alert-danger").fadeOut(1000);
+                            },4000);
                         }
                     }
                 )
             }
             else {
-                $http.get('http://localhost:9200/jobs/it/_search', {params: {size: 1000}}).success(
+                console.log('/search/keywords');
+                $http.get('/search/keywords/'+$scope.query).success(
                     function (data) {
-                        $scope.max_score = data.hits.max_score;
-                        $scope.jobs = data.hits.hits;
-                        Console.log($scope.max_score);
-                        $scope.result = true;
+                        if (data.length != 0) {
+                            $scope.result = true;
+                            //$scope.max_score = data.hits.max_score;
+                            data.forEach(function(e,i,a){
+                                var d =new Date(data.createDate*1000);
+                                data.createDate = d.getFullYear()+'/'+ d.getMonth()+'/'+ d.getDay();
+                            });
+                            $scope.blogs = data;
+
+                        }
+                        else {
+                            $scope.result = false;
+                            setTimeout(function(){
+                                $(".alert-danger").fadeOut(1000);
+                            },4000);
+                        }
                     }
                 )
             }

@@ -1,13 +1,46 @@
+<!--Search Panel-->
 <div class="panel panel-primary col-xs-12 col-sm-8 col-sm-offset-2">
     <div class="panel-heading"><i class="fa fa-search">CAMT search tool</i></div>
     <div class="panel-body">
         <div class="col-xs-12">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="keyword here">
+            <form ng-submit="search()">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="keyword here" ng-model="query">
                       <span class="input-group-btn">
-                        <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>
+                        <button class="btn btn-success" type="button" ng-click="search()"><i class="fa fa-search"></i></button>
                       </span>
-            </div><!-- /input-group -->
+                </div><!-- /input-group -->
+            </form>
         </div><!-- /.col-lg-6 -->
     </div>
 </div>
+
+<div class="result-panel panel panel-default col-md-12" ng-show="blogs.length!=0">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Search Result</div>
+
+    <!-- Table -->
+    <table class="table table-hover table-striped table-responsive">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Create date</th>
+            <th>Tags</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="blog in blogs">
+            <td>{{$index+1}}</td>
+            <td><a href={{blog.url}}>{{blog.title}}</a></td>
+            <td>{{blog.content}}</td>
+            <td>{{blog.createDate}}</td>
+            <td><p ng-repeat="tag in blog.tags">{{tag.name}}</p></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--Alert dialog-->
+<div id="alert-result" class="alert alert-danger" role="alert" ng-show="!result">There is no result for {{query}}</div>

@@ -1,10 +1,22 @@
 package com.kritcg.elastic.entities;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldIndex;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 /**
  * Created by Chertpong on 7/21/2015.
  */
 public class Tag {
+    @Field(
+            type = FieldType.Integer,
+            index = FieldIndex.not_analyzed
+    )
     int id;
+    @Field(
+            type = FieldType.String,
+            index = FieldIndex.not_analyzed
+    )
     String name;
 
     public int getId() {

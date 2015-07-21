@@ -3,19 +3,32 @@ package com.kritcg.elastic;
 import com.kritcg.elastic.entities.Blog;
 import com.kritcg.elastic.entities.Tag;
 import com.kritcg.elastic.repositories.BlogRepository;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.collect.Lists;
+import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.support.QueryParsers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 
-import java.util.*;
+import static org.elasticsearch.index.query.FilterBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import java.util.*;
+import java.util.logging.Filter;
+
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by Chertpong on 7/21/2015.
@@ -101,9 +114,43 @@ public class RepositoryTests{
     public void shouldCountAllBlogs(){
         assertThat(blogRepository.count(), is(3L));
     }
+
     @Test
-    public void shouldGetBlogByKeywordInContent(){
-        assertThat(blogRepository.findByContentContaining("ไอบีเอ็ม").get(0).getId(), is(equalTo("1")));
+    public void shouldGetBlogByKeywordLikeContent(){
+        assertThat(blogRepository.findByContentLike("ไอบีเอ็ม").get(0).getId(), is(equalTo("1")));
     }
+    @Ignore
+    @Test
+    public void shouldGetBlogByTag(){
+        System.out.println("Start get by blog tag");
+        //Wait for next phase
+        SearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(
+                        QueryBuilders.filteredQuery(matchAllQuery(),FilterBuilders.nestedFilter("tags", termFilter("tags.id", 1)))
+                )
+                .build();
+
+        System.out.println(query.getQuery().toString());
+//        System.out.println(query.getFilter().toString());
+        List<Blog> list = elasticsearchTemplate.queryForList(query,Blog.class);
+        list.forEach(b-> System.out.println(b.toString()));
+        assertThat(Iterables.size(list), greaterThan(0));
+
+    }
+    @Test
+    public void shouldGetBlogByTiTleAndContent(){
+        System.out.println("Start get by blog tags");
+        SearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(
+                        QueryBuilders.multiMatchQuery("ธุรกิจ ไมโครซอฟท์ เปิดให้โหลดได้เฉพาะ", "title", "content")
+                                .type(MultiMatchQueryBuilder.Type.BEST_FIELDS)
+                )
+                .build();
+        System.out.println(query.getQuery().toString());
+        Iterable<Blog> list = blogRepository.search(query);
+        list.iterator().forEachRemaining(s -> System.out.println(s.toString()));
+        assertThat(Iterables.size(list), greaterThan(0));
+    }
+
 
 }

@@ -23,7 +23,7 @@ public class SearchBlogServiceImpl implements SearchBlogService{
 
     @Override
     public List<Blog> getBlogs(String keyword) {
-        return blogDao.getBlogs(keyword);
+        return blogDao.getByTitleAndContentLike(keyword);
     }
 
     @Override

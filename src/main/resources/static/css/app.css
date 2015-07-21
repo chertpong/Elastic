@@ -41,7 +41,12 @@ body {
 .main .page-header {
     margin-top: 0;
 }
-
+.result-panel{
+    margin-top:50px;
+}
+#alert-result{
+    margin-top: 200px;
+}
 
 /*
  * Placeholder dashboard ideas

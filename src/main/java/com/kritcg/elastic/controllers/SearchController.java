@@ -13,29 +13,36 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("search")
+@RequestMapping("/")
 public class SearchController {
     @Autowired
     private SearchBlogService searchBlogService;
 
-    @RequestMapping(value = "",method = RequestMethod.GET)
+    @ResponseBody
+    @RequestMapping(value = "search/all",method = RequestMethod.GET)
     public List<Blog> getBlogs(){ return searchBlogService.getBlogs(); }
 
-    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "search/id/{id}", method = RequestMethod.GET)
     public Blog getBlog(@PathVariable String id){
         return searchBlogService.getBlog(id);
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "search/add", method = RequestMethod.POST)
     public Blog addBlog(@RequestBody Blog blog, BindingResult bindingResult){
         return searchBlogService.addBlog(blog);
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "search/delete/{id}", method = RequestMethod.GET)
     public Blog deleteBlog(@PathVariable String id){
         return searchBlogService.deleteBlog(id);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    @RequestMapping(value = "search/update", method = RequestMethod.PUT)
     public Blog updateBlog(@RequestBody Blog blog, BindingResult bindingResult){ return searchBlogService.updateBlog(blog); }
+
+    @ResponseBody
+    @RequestMapping(value = "search/keywords/{keyword}", method = RequestMethod.GET)
+    public List<Blog> getBlogs(@PathVariable String keyword){
+        return searchBlogService.getBlogs(keyword);
+    }
 }
