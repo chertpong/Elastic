@@ -30,7 +30,7 @@ public class Blog {
             type = FieldType.Date,
             index = FieldIndex.not_analyzed,
             store = true,
-            format = DateFormat.custom, pattern = "yyyy.MM.dd hh:mm")
+            format = DateFormat.custom, pattern = "yyyy/MM/dd HH/mm/ss")
     private Date createDate;
 
     @NotNull
