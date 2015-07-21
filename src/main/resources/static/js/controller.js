@@ -28,8 +28,8 @@ elasticMainController.controller('indexController',['$scope','$http','$location'
                             $scope.result = true;
                             //$scope.max_score = data.hits.max_score;
                             data.forEach(function(e,i,a){
-                                var d =new Date(data.createDate*1000);
-                                console.log(d.format("dd.mm.yyyy hh:MM:ss"));
+                                var d =new Date(data.createDate);
+                                //console.log(d.getFullYear());
                                 data.createDate = d.getFullYear()+'/'+ d.getMonth()+'/'+ d.getDay();
                             });
                             $scope.blogs = data;
@@ -51,8 +51,8 @@ elasticMainController.controller('indexController',['$scope','$http','$location'
                             $scope.result = true;
                             //$scope.max_score = data.hits.max_score;
                             data.forEach(function(e,i,a){
-                                var d =new Date(data.createDate*1000);
-                                data.createDate = d.getFullYear()+'/'+ d.getMonth()+'/'+ d.getDay();
+                                var d = moment.unix(e.createDate);
+                                data.createDate = d.format();
                             });
                             $scope.blogs = data;
 

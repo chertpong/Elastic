@@ -47,6 +47,10 @@ body {
 #alert-result{
     margin-top: 200px;
 }
+.tag{
+    margit-left:5px;
+    margin-right:5px;
+}
 
 /*
  * Placeholder dashboard ideas
