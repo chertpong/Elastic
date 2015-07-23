@@ -27,12 +27,12 @@ elasticMainController.controller('indexController',['$scope','$http','$location'
                         if (data.length != 0) {
                             $scope.result = true;
                             //$scope.max_score = data.hits.max_score;
-                            data.forEach(function(e,i,a){
-                                var d =new Date(data.createDate);
-                                //console.log(d.getFullYear());
-                                data.createDate = d.getFullYear()+'/'+ d.getMonth()+'/'+ d.getDay();
-                            });
                             $scope.blogs = data;
+                            $scope.blogs.forEach(function(e,i,a){
+                                var d = moment.unix(e.createDate/1000);
+                                e.createDate = d.format();
+                            });
+
                         }
                         else {
                             $scope.result = false;
@@ -50,11 +50,11 @@ elasticMainController.controller('indexController',['$scope','$http','$location'
                         if (data.length != 0) {
                             $scope.result = true;
                             //$scope.max_score = data.hits.max_score;
-                            data.forEach(function(e,i,a){
-                                var d = moment.unix(e.createDate);
-                                data.createDate = d.format();
-                            });
                             $scope.blogs = data;
+                            $scope.blogs.forEach(function(e,i,a){
+                                var d = moment.unix(e.createDate/1000);
+                                e.createDate = d.format();
+                            });
 
                         }
                         else {
