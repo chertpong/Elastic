@@ -50,7 +50,6 @@ public class RepositoryTests{
 
     @Before
     @Test
-    @Ignore
     public void shouldDeleteAllDataAndInitializeTestData(){
         //delete all data
         blogRepository.deleteAll();
@@ -101,8 +100,6 @@ public class RepositoryTests{
 
     }
 
-    @Ignore
-    @Before
     @Test
     public void shouldInitData(){
         List<Blog> blogList = new ArrayList<>();
@@ -170,26 +167,23 @@ public class RepositoryTests{
 
     @Test
     public void shouldCountAllBlogs(){
-        assertThat(blogRepository.count(), is(3L));
+        assertThat(blogRepository.count(), is(greaterThan(5L)));
     }
 
     @Test
     public void shouldGetBlogByKeywordLikeContent(){
         assertThat(blogRepository.findByContentLike("ไอบีเอ็ม").get(0).getId(), is(equalTo("1")));
     }
-    @Ignore
     @Test
     public void shouldGetBlogByTag(){
         System.out.println("Start get by blog tag");
-        //Wait for next phase
         SearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(
-                        QueryBuilders.filteredQuery(matchAllQuery(),FilterBuilders.nestedFilter("tags", termFilter("tags.id", 1)))
+                        QueryBuilders.filteredQuery(matchAllQuery(),FilterBuilders.nestedFilter("tags", termFilter("tags.id", 2)))
                 )
                 .build();
 
         System.out.println(query.getQuery().toString());
-//        System.out.println(query.getFilter().toString());
         List<Blog> list = elasticsearchTemplate.queryForList(query,Blog.class);
         list.forEach(b-> System.out.println(b.toString()));
         assertThat(Iterables.size(list), greaterThan(0));
@@ -210,5 +204,18 @@ public class RepositoryTests{
         assertThat(Iterables.size(list), greaterThan(0));
     }
 
+    @Test
+    public void shouldFilterBlogByTagAndMatchQuery(){
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(
+                    QueryBuilders.filteredQuery(
+                            matchQuery("title","ธุรกิจ"),
+                            FilterBuilders.nestedFilter("tags", termFilter("tags.id", 2)))
+                )
+                .build();
+        List<Blog> list = elasticsearchTemplate.queryForList(searchQuery,Blog.class);
+        System.out.println("size: "+list.size());
+        list.forEach(m-> System.out.println(m));
+    }
 
 }
