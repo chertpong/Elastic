@@ -4,22 +4,26 @@ import com.kritcg.elastic.entities.Blog;
 import com.kritcg.elastic.entities.Tag;
 import com.kritcg.elastic.repositories.BlogRepository;
 import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.index.query.*;
-import org.elasticsearch.index.query.support.QueryParsers;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.FacetedPage;
+import org.springframework.data.elasticsearch.core.FacetedPageImpl;
+import org.springframework.data.elasticsearch.core.SearchResultMapper;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,7 +37,6 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Filter;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -209,13 +212,49 @@ public class RepositoryTests{
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(
                     QueryBuilders.filteredQuery(
-                            matchQuery("title","ธุรกิจ"),
+                            matchQuery("title", "ธุรกิจ"),
                             FilterBuilders.nestedFilter("tags", termFilter("tags.id", 2)))
                 )
                 .build();
-        List<Blog> list = elasticsearchTemplate.queryForList(searchQuery,Blog.class);
-        System.out.println("size: "+list.size());
-        list.forEach(m-> System.out.println(m));
+        List<Blog> list = elasticsearchTemplate.queryForList(searchQuery, Blog.class);
+        System.out.println("size: " + list.size());
+        list.forEach(m -> System.out.println(m));
+        assertThat(list.size(),is(1));
+    }
+
+    @Test
+    public void shouldGetBlogWithHighLightedContent(){
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(
+                        QueryBuilders.filteredQuery(
+                                matchQuery("title","ธุรกิจ"),
+                                FilterBuilders.nestedFilter("tags", termFilter("tags.id", 2)))
+                )
+                //.withHighlightFields(new HighlightBuilder.Field("title"),new HighlightBuilder.Field("content"))
+                .withHighlightFields(
+                        new HighlightBuilder.Field("title").preTags("<strong>").postTags("</strong>"),
+                        new HighlightBuilder.Field("content").preTags("<strong>").postTags("</strong>")
+                )
+                .build();
+        Page<Blog> pages = elasticsearchTemplate.queryForPage(searchQuery, Blog.class, new SearchResultMapper() {
+            @Override
+            public <T> FacetedPage<T> mapResults(SearchResponse searchResponse, Class<T> aClass, Pageable pageable) {
+                List<Blog> list = new ArrayList<Blog>();
+                for(SearchHit searchHit : searchResponse.getHits()){
+                    if(searchResponse.getHits().getHits().length <= 0){
+                        return null;
+                    }
+                    Blog b = new Blog();
+                    b.setId(searchHit.getId());
+                    b.setTitle(searchHit.getHighlightFields().get("title").fragments()[0].toString());
+                    b.setContent(searchHit.getHighlightFields().get("content").fragments()[0].toString());
+                    list.add(b);
+                }
+                return list.size() > 0 ? new FacetedPageImpl<T>((List<T>)list) : null;
+            }
+        });
+        System.out.println(pages.getContent().get(0).getTitle());
+        System.out.println(pages.getContent().get(0).getContent());
     }
 
 }
