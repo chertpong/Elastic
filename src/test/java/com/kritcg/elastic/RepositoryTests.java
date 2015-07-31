@@ -103,54 +103,54 @@ public class RepositoryTests{
 
     }
 
-    @Test
-    public void shouldInitData(){
-        List<Blog> blogList = new ArrayList<>();
-        String url = "https://www.blognone.com/node/";
-        for(int index = 70000; index<70500;index++){
-        try {
-
-
-                //init
-                Document doc;
-                doc = Jsoup.connect(url+index)
-                        .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 " +
-                                "(KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30").get();
-
-                //processes
-                Blog b = new Blog();
-                b.setTitle(doc.select("h2[itemprop] > a").first().attr("title"));
-                b.setUrl(url);
-                b.setContent(doc.select(".node-content").text());
-                b.setCreateDate(new Date());
-
-                List<Tag> tags = new ArrayList<Tag>();
-                int i = 0;
-                for(Element e : doc.select(".terms > ul > li")){
-                    Tag t =  new Tag();
-                    t.setId(i);
-                    t.setName(e.select("a[href]").text());
-                    tags.add(t);
-                    i++;
-                }
-                b.setTags(tags);
-
-                //add to list
-                blogList.add(b);
-                System.out.println("Round"+index);
-
-
-        }
-        catch (HttpStatusException e) {
-            e.printStackTrace();
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
-    }
-        blogRepository.save(blogList);
-        System.out.println("blogs: "+blogRepository.count());
-    }
+//    @Test
+//    public void shouldInitData(){
+//        List<Blog> blogList = new ArrayList<>();
+//        String url = "https://www.blognone.com/node/";
+//        for(int index = 70000; index<70500;index++){
+//        try {
+//
+//
+//                //init
+//                Document doc;
+//                doc = Jsoup.connect(url+index)
+//                        .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 " +
+//                                "(KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30").get();
+//
+//                //processes
+//                Blog b = new Blog();
+//                b.setTitle(doc.select("h2[itemprop] > a").first().attr("title"));
+//                b.setUrl(url);
+//                b.setContent(doc.select(".node-content").text());
+//                b.setCreateDate(new Date());
+//
+//                List<Tag> tags = new ArrayList<Tag>();
+//                int i = 0;
+//                for(Element e : doc.select(".terms > ul > li")){
+//                    Tag t =  new Tag();
+//                    t.setId(i);
+//                    t.setName(e.select("a[href]").text());
+//                    tags.add(t);
+//                    i++;
+//                }
+//                b.setTags(tags);
+//
+//                //add to list
+//                blogList.add(b);
+//                System.out.println("Round"+index);
+//
+//
+//        }
+//        catch (HttpStatusException e) {
+//            e.printStackTrace();
+//        }
+//        catch (IOException io){
+//            io.printStackTrace();
+//        }
+//    }
+//        blogRepository.save(blogList);
+//        System.out.println("blogs: "+blogRepository.count());
+//    }
     @Test
     public void shouldPrintMapping(){
         Map map = elasticsearchTemplate.getMapping(Blog.class);
@@ -170,7 +170,7 @@ public class RepositoryTests{
 
     @Test
     public void shouldCountAllBlogs(){
-        assertThat(blogRepository.count(), is(greaterThan(5L)));
+        assertThat(blogRepository.count(), is(greaterThan(0L)));
     }
 
     @Test

@@ -15,32 +15,35 @@
     </div>
 </div>
 
-<div class="result-panel panel panel-default col-xs-12" ng-show="blogs.length!=0">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Search Result</div>
 
-    <!-- Table -->
-    <table class="table table-hover table-striped">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Content</th>
-            <th>Create date</th>
-            <th>Tags</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="blog in blogs">
-            <td>{{$index+1}}</td>
-            <td><a href={{blog.url}}>{{blog.title}}</a></td>
-            <td>{{blog.content}}</td>
-            <td>{{blog.createDate}}</td>
-            <td><span class="label label-info tag" ng-repeat="tag in blog.tags"><i class="fa fa-tag">{{tag.name}}</i></span></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <div class="result-panel panel panel-default col-xs-12" ng-show="blogs.length!=0">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Search Result</div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Create date</th>
+                    <th>Tags</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="blog in blogs">
+                    <td>{{$index+1}}</td>
+                    <td><a href={{blog.url}}>{{blog.title}}</a></td>
+                    <td>{{blog.content}}</td>
+                    <td>{{blog.createDate}}</td>
+                    <td><span class="label label-info tag" ng-repeat="tag in blog.tags"><i class="fa fa-tag">{{tag.name}}</i></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 <!--Alert dialog-->
 <div id="alert-result" class="alert alert-danger" role="alert" ng-show="!result">There is no result for {{query}}</div>
