@@ -18,6 +18,11 @@ public class Tag {
             index = FieldIndex.not_analyzed
     )
     String name;
+    @Field(
+            type = FieldType.Double,
+            index = FieldIndex.not_analyzed
+    )
+    Double score;
 
     public int getId() {
         return id;
@@ -35,11 +40,20 @@ public class Tag {
         this.name = name;
     }
 
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
     @Override
     public String toString() {
         return "Tag{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
+                ", score=" + score +
                 '}';
     }
 }
