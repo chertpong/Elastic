@@ -19,10 +19,10 @@ public class Tag {
     )
     String name;
     @Field(
-            type = FieldType.Double,
+            type = FieldType.Integer,
             index = FieldIndex.not_analyzed
     )
-    Double score;
+    int score;
 
     public int getId() {
         return id;
@@ -40,11 +40,11 @@ public class Tag {
         this.name = name;
     }
 
-    public Double getScore() {
+    public int getScore() {
         return score;
     }
 
-    public void setScore(Double score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
